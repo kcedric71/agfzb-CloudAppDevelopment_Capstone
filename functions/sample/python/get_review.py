@@ -1,9 +1,10 @@
-"""get_revie"""
+"""get_review"""
 import sys
 from ibmcloudant.cloudant_v1 import CloudantV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
 def main(dict):
+    """main function"""
     authenticator = IAMAuthenticator("Your apiKey")
     service = CloudantV1(authenticator=authenticator)
     service.set_service_url("Your Url")
