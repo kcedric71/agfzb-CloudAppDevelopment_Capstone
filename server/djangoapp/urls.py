@@ -21,6 +21,8 @@ urlpatterns = [
     path('logout/', views.logout_request, name='logout'),
 
     path(route='', view=views.get_dealerships, name='index'),
+
+    # path for get dealership
     path(route='api/dealership', view=views.get_dealerships, name='dealership'),
     path(route='api/dealership/<str:state>', view=views.get_dealerships, name='dealership'),
 
