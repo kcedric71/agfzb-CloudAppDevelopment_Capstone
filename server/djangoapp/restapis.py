@@ -2,6 +2,10 @@ import requests
 import json
 from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_watson import NaturalLanguageUnderstandingV1
+from ibm_watson.natural_language_understanding_v1 import Features,SentimentOptions
+
 
 # Create a `get_request` to make HTTP GET requests
 # e.g., response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
@@ -12,18 +16,18 @@ def get_request(url, **kwargs):
     response = requests.Response()
     try:
         # Call get method of requests library with URL and parameters
-        if "api_key" in kwargs.keys():
-            print("ok")
-            api_key = kwargs["api_key"]
-            params = dict()
-            params["text"] = kwargs["text"]
+        #if "api_key" in kwargs.keys():
+       #     print("ok")
+        #    api_key = kwargs["api_key"]
+        #    params = dict()
+        #    params["text"] = kwargs["text"]
             #params["version"] = kwargs["version"]
-            params["features"] = kwargs["features"]
-            params["return_analyzed_text"] = kwargs["return_analyzed_text"]
-            response = requests.get(url, headers={'Content-Type': 'application/json'},
-                                    params=params, auth=HTTPBasicAuth('apikey', api_key))
-        else:
-            print("nok")
+        #    params["features"] = kwargs["features"]
+        #    params["return_analyzed_text"] = kwargs["return_analyzed_text"]
+        #    response = requests.get(url, headers={'Content-Type': 'application/json'},
+         #                           params=params, auth=HTTPBasicAuth('apikey', api_key))
+        #else:
+        #    print("nok")
             response = requests.get(url, headers={'Content-Type': 'application/json'},
                                     params=kwargs)
     except:
@@ -126,12 +130,13 @@ def get_dealer_reviews_from_cf(url, dealerId):
 def analyze_review_sentiments(text_to_analyze):
     watson_url = "https://api.eu-de.natural-language-understanding.watson.cloud.ibm.com/instances/1ddb3e6f-249a-412e-8fd9-5dd2cde31d26"
     watson_api_key = "jtOREZnQJwVRPQWtxtIk5kmHz3TxeuJ5BwYYLtA3ASXD"
-    #params = dict()
-    #params["api_key"]=watson_api_key
-    #params["text"]=text
-    #params["return_analyzed_text"]=True
-    #params["features"]={'sentiment': {}}
-    response = get_request(watson_url,api_key = watson_api_key, text = text_to_analyze, return_analyzed_text = True, features = {'sentiment':{}})
-    return response #["sentiments"]["targets"]["label"]
+    
+    authenticator = IAMAuthenticator(watson_api_key)
+    natural_language_understanding = NaturalLanguageUnderstandingV1(version='2021-08-01',authenticator=authenticator) 
+    natural_language_understanding.set_service_url(watson_url) 
+    response = natural_language_understanding.analyze( text=text_to_analyze ,features=Features(sentiment=SentimentOptions(targets=[text_to_analyze]))).get_result() 
+    label=json.dumps(response, indent=2) 
+    label = response['sentiment']['document']['label'] 
+    return(label) 
 
 
