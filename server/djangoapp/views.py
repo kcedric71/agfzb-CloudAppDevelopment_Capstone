@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -110,5 +110,14 @@ def get_dealer_details(request, dealer_id):
 
 # Create a `add_review` view to submit a review
 def add_review(request, dealer_id):
-    return {}
+    #TO DO : Check if user is authenticated
+    url = "https://eu-de.functions.cloud.ibm.com/api/v1/namespaces/f33280bd-14f3-46b5-9b7a-a056067aa95d/actions/dealership-package/post-review"
+    review = dict()
+    review["time"] = datetime.utcnow().isoformat()
+    review["dealership"] = dealer_id
+    review["review"] = "Text"
+    json_payload = dict()
+    json_payload= review
+    response = post_request(url, json_payload, dealership=dealer_id)
+    print(response)
 
