@@ -15,26 +15,31 @@
     <form action="{% url 'djangoapp:add_review' dealer_id %}" method="post">
         <div class="container"> 
           {% csrf_token %}
-          <h1>review for {{dealer_id}}</h1>
+          <h1>Add a review for {{dealer_name}}</h1>
+          <input type="hidden" id="username" name="username" value="{{user.username}}">
           <hr>
           <div class="form-group">
+                <label for="content">Enter the review content:</label>
                 <textarea class="form-control" id="content" name="content" rows="2" required>Your review here</textarea>
           </div>
           <div class="form-group">
                 <input class="form-check-input" type="checkbox" name="purchasecheck" id="purchasecheck">
-                <label class="form-check-label" for="purchasecheck">Purchased</label> 
+                <label class="form-check-label" for="purchasecheck">Has purchased the car from {{dealer_name}}</label> 
           </div>
-          <div class="form-group">         
+          <div class="form-group">
+              <label for="car">Select your car (model-make-year</label>
                 <select name="car" id="car" class="form-select" required>
                     {% for car in cars %}
-                        <option selected value={{car.id}}>{{car.name}}-{{car.car_make.name}}-{{ car.year|date:"Y" }}</option>
+                        <option selected value="{{car.id}}"">{{car.name}}-{{car.car_make.name}}-{{ car.year|date:"Y" }}</option>
                     {% endfor %}
                </select>
             </div>
             <div class="form-group">
-               <input class="date-own form-control" type="text" name="purchasedate" id="purchasedate">
-                <button class="btn btn-primary" type="submit">Post review</button> <!--Style button with .btn and .btn-primary class -->
-          </div>
+               <label for="purchasedate">Select Your Purchase Date</label>
+                <input class="date-own form-control" type="text" name="purchasedate" id="purchasedate">
+            </div>
+               <button class="btn btn-primary" type="submit">Post review</button> <!--Style button with .btn and .btn-primary class -->
+          
         </div>
       </form>
     </body>

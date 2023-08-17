@@ -124,23 +124,27 @@ def add_review(request, dealer_id):
     if request.method == "GET":
         context = {}
         cars = CarModel.objects.all()
+        dealer_info = get_dealer_by_id("https://eu-de.functions.appdomain.cloud/api/v1/web/f33280bd-14f3-46b5-9b7a-a056067aa95d/dealership-package/get-dealership", id=dealer_id)
         context['cars']= cars
         context['dealer_id']=dealer_id
+        context['dealer_name']=dealer_info[0].full_name
         return render(request, 'djangoapp/add_review.html', context)
     
     if request.method == "POST":
         url = "https://eu-de.functions.appdomain.cloud/api/v1/web/f33280bd-14f3-46b5-9b7a-a056067aa95d/dealership-package/post-review"
         car_info = CarModel.objects.get(pk=request.POST["car"])
+        print(car_info)
         review = dict()
+        review["id"] = 1
         review["review"]=request.POST["content"]
         review["purchase"]=request.POST["purchasecheck"]
         review["car_model"] = car_info.name
-        review["car_make"] = car_info.car_make
-        review["car_year"] = car_info.year
+        review["car_make"] = car_info.car_make.name
+        review["car_year"] = car_info.year.strftime("%Y")
         review["purchase_date"] = request.POST["purchasedate"]
         review["dealership"] = dealer_id
-        review["time"] = datetime.utcnow().isoformat()
-        review["name"] = "Name"
+        review["time"] = datetime.strptime(request.POST["purchasedate"],"%m/%d/%Y").isoformat()
+        review["name"] = request.POST["username"]
         json_payload = dict()
         json_payload= { 'review' : review }
         response = post_request(url, json_payload, dealership=dealer_id)
